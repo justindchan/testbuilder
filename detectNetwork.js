@@ -15,11 +15,14 @@ var detectNetwork = function(cardNumber) {
   var start = cardNumber.slice(0, 2);
   var startFourDigits = cardNumber.slice(0, 4);
   var startThreeDigits = cardNumber.slice(0, 3);
+  var startSixDigits = cardNumber.slice(0, 6);
   var len = cardNumber.length;
   if ((len === 14) && (start === '38' || start === '39')) {
   	return "Diner's Club";
   } else if ((len === 15) && (start === '34' || start === '37')) {
   	return 'American Express';
+  } else if((len === 16 || len === 18 || len === 19) && (startFourDigits === '4903' || startFourDigits === '4905' || startFourDigits === '4911' || startFourDigits === '4936' || startSixDigits === '564182' || startSixDigits === '633110' || startFourDigits === '6333' || startFourDigits === '6759')){
+    return 'Switch';
   } else if ((len === 13 || len === 16 || len === 19) && start.slice(0,1) === '4') {
   	return 'Visa';
   } else if ((len === 16) && (start === '51' || start === '52' || start === '53' || start === '54' || start === '55')) {
@@ -28,7 +31,14 @@ var detectNetwork = function(cardNumber) {
   	return 'Discover';
   } else if ((len >= 12 && len <= 19) && (startFourDigits === '5018' || startFourDigits === '5020' || startFourDigits === '5038' || startFourDigits === '6304')){
   	return 'Maestro';
+  } else if ((len >= 16 && len <= 19) && ((Number(startThreeDigits) >= 624 && Number(startThreeDigits) <= 626) || (Number(startFourDigits) >= 6282 && Number(startFourDigits) <= 6288) || (Number(startSixDigits) >= 622126 && Number(startSixDigits) <= 622925))){
+  	return 'China UnionPay';
   }
+  
+  // China UnionPay always has a prefix of 622126-622925, 624-626, or 6282-6288 and a length of 16-19.
+  // Switch always has a prefix of 4903, 4905, 4911, 4936, 564182, 633110, 6333, or 6759 and a length of 16, 18, or 19.
+  // Heads up! Switch and Visa seem to have some overlapping card numbers - 
+  // in any apparent conflict, you should choose the network with the longer prefix.
   
   // Discover always has a prefix of 6011, 644-649, or 65, and a length of 16 or 19.
   // Maestro always has a prefix of 5018, 5020, 5038, or 6304, and a length of 12-19.
